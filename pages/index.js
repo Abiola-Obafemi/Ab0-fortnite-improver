@@ -1,7 +1,4 @@
-// --- THIS WAS MISSING ---
-import { useState, useEffect } from 'react'; 
-// ------------------------
-
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Chart, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
@@ -16,7 +13,6 @@ export default function Dashboard() {
   const [chat, setChat] = useState([{ role: 'ai', text: 'SYSTEM ONLINE. Ready to analyze.' }]);
   const [input, setInput] = useState('');
 
-  // Fix for Vercel Build (Prevents localStorage crash on server)
   useEffect(() => {
     const savedUser = localStorage.getItem('abronix_user');
     if (savedUser) setUser(savedUser);
@@ -27,11 +23,9 @@ export default function Dashboard() {
     alert('User Saved: ' + user);
   };
 
-  // --- ACTIONS ---
   const fetchStats = async () => {
     if (!user) return alert("Please enter username in Settings first");
-    
-    // Simulate API call (Replace with /api/stats call in production)
+    // In production, this calls /api/stats
     setStats({ kd: '3.42', win: '12.5%', matches: '840' }); 
   };
 
@@ -50,92 +44,107 @@ export default function Dashboard() {
       const data = await res.json();
       setChat(prev => [...prev, { role: 'ai', text: data.reply }]);
     } catch (e) {
-      setChat(prev => [...prev, { role: 'ai', text: 'Error connecting to server.' }]);
+      setChat(prev => [...prev, { role: 'ai', text: 'Neural Link Offline (Check API Key)' }]);
     }
   };
 
-  // --- RENDER ---
   return (
-    <div className="flex h-screen w-screen bg-[#050505] text-white overflow-hidden font-sans">
+    <div className="flex h-screen" style={{background: 'var(--bg)', color: 'white'}}>
       <Head>
         <title>ABRØNIX | PRO OS</title>
       </Head>
 
       {/* SIDEBAR */}
-      <div className="w-20 hover:w-64 transition-all duration-300 border-r border-white/10 flex flex-col items-center py-6 bg-[#0a0a0a] z-50">
-        <div className="text-[#ff003c] font-black text-2xl mb-8">A</div>
+      <div className="sidebar">
+        <div style={{color: 'var(--brand)', fontWeight: 900, fontSize: '1.5rem', marginBottom: '2rem'}}>A</div>
         
-        <NavIcon icon={<Activity />} label="Overview" active={tab==='dashboard'} onClick={() => setTab('dashboard')} />
-        <NavIcon icon={<Brain />} label="Neural Coach" active={tab==='coach'} onClick={() => setTab('coach')} />
-        <NavIcon icon={<Target />} label="Routine Gen" active={tab==='routine'} onClick={() => setTab('routine')} />
-        <NavIcon icon={<Settings />} label="Settings" active={tab==='settings'} onClick={() => setTab('settings')} />
+        <div className={`nav-item ${tab==='dashboard'?'active':''}`} onClick={() => setTab('dashboard')}>
+          <Activity size={20} /> <span>Overview</span>
+        </div>
+        <div className={`nav-item ${tab==='coach'?'active':''}`} onClick={() => setTab('coach')}>
+          <Brain size={20} /> <span>Neural Coach</span>
+        </div>
+        <div className={`nav-item ${tab==='routine'?'active':''}`} onClick={() => setTab('routine')}>
+          <Target size={20} /> <span>Routine Gen</span>
+        </div>
+        <div className={`nav-item ${tab==='settings'?'active':''}`} onClick={() => setTab('settings')}>
+          <Settings size={20} /> <span>Settings</span>
+        </div>
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-col w-full" style={{position: 'relative'}}>
         {/* HEADER */}
-        <div className="h-20 border-b border-white/10 flex items-center justify-between px-8 bg-[#0a0a0a]">
-          <h1 className="font-bold text-xl tracking-widest">ABRØNIX <span className="text-[#ff003c]">PRO</span></h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#00ff00]"></div>
+        <div className="header">
+          <h1 style={{fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 'bold'}}>
+            ABRØNIX <span style={{color: 'var(--brand)'}}>PRO</span>
+          </h1>
+          <div className="flex items-center gap-2" style={{fontSize: '0.8rem', color: '#666'}}>
+            <div style={{width: 8, height: 8, background: '#00ff00', borderRadius: '50%', boxShadow: '0 0 10px #00ff00'}}></div>
             ONLINE
           </div>
         </div>
 
-        <div className="p-8 overflow-y-auto flex-1">
+        <div className="p-8 fade-in" style={{overflowY: 'auto', height: 'calc(100vh - 80px)'}}>
           
           {/* DASHBOARD PAGE */}
           {tab === 'dashboard' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <div className="grid-3">
                 <StatCard label="SEASON K/D" value={stats.kd} sub="Top 4% (Good)" />
                 <StatCard label="WIN RATE" value={stats.win} sub={`Matches: ${stats.matches}`} />
-                <StatCard label="MAIN WEAKNESS" value="OFF-SPAWN" color="text-[#ff003c]" sub="Detected by AI" />
+                <StatCard label="MAIN WEAKNESS" value="OFF-SPAWN" color="var(--brand)" sub="Detected by AI" />
               </div>
-              <div className="bg-white/5 p-6 rounded-xl h-64 flex items-center justify-center border border-white/10">
-                 <div className="text-gray-500">PERFORMANCE GRAPH VISUALIZER (ACTIVE)</div>
+              <div className="glass" style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                 <div style={{color: '#666'}}>PERFORMANCE GRAPH VISUALIZER (ACTIVE)</div>
               </div>
-              <button onClick={fetchStats} className="bg-[#ff003c] px-6 py-3 rounded font-bold hover:opacity-80 transition">REFRESH DATA</button>
+              <button onClick={fetchStats} className="btn-primary" style={{marginTop: '20px', width: 'auto'}}>REFRESH DATA</button>
             </div>
           )}
 
           {/* AI COACH PAGE */}
           {tab === 'coach' && (
-            <div className="h-full flex flex-col bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+            <div className="glass" style={{height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden'}}>
+              <div style={{flex: 1, padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                 {chat.map((c, i) => (
-                  <div key={i} className={`p-4 rounded-lg max-w-[80%] ${c.role === 'ai' ? 'bg-[#111] border-l-2 border-[#ff003c]' : 'bg-[#ff003c] ml-auto'}`}>
+                  <div key={i} style={{
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    maxWidth: '80%', 
+                    background: c.role === 'ai' ? '#111' : 'var(--brand)',
+                    alignSelf: c.role === 'ai' ? 'flex-start' : 'flex-end',
+                    borderLeft: c.role === 'ai' ? '3px solid var(--brand)' : 'none'
+                  }}>
                     {c.text}
                   </div>
                 ))}
               </div>
-              <div className="p-4 border-t border-white/10 flex gap-2 bg-black">
+              <div style={{padding: '1rem', borderTop: '1px solid var(--border)', background: '#000', display: 'flex', gap: '10px'}}>
                 <input 
                   value={input} 
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   placeholder="Ask about competitive strategy..." 
-                  className="flex-1 bg-transparent border border-white/10 p-2 rounded text-white focus:border-[#ff003c] outline-none"
                 />
-                <button onClick={sendMessage} className="bg-[#ff003c] p-2 rounded hover:opacity-80"><Send size={18} /></button>
+                <button onClick={sendMessage} className="btn-primary" style={{width: 'auto'}}><Send size={18} /></button>
               </div>
             </div>
           )}
 
            {/* SETTINGS PAGE */}
            {tab === 'settings' && (
-            <div className="max-w-lg mx-auto bg-white/5 p-8 rounded-xl border border-white/10">
-              <h2 className="text-xl font-bold mb-6">SYSTEM CONFIG</h2>
-              <p className="text-sm text-gray-500 mb-4">API Keys are handled via Vercel Environment Variables for security.</p>
+            <div className="glass" style={{maxWidth: '500px', margin: '0 auto', padding: '2rem'}}>
+              <h2 style={{fontSize: '1.5rem', marginBottom: '1rem'}}>SYSTEM CONFIG</h2>
+              <p style={{color: '#666', marginBottom: '1.5rem'}}>API Keys are handled via Vercel Environment Variables for security.</p>
               
-              <label className="block text-xs text-gray-400 mb-2">FORTNITE USERNAME</label>
+              <label style={{display: 'block', fontSize: '0.8rem', color: '#888', marginBottom: '0.5rem'}}>FORTNITE USERNAME</label>
               <input 
                 value={user} 
                 onChange={(e) => setUser(e.target.value)}
                 placeholder="Epic Games ID" 
-                className="w-full bg-black/50 border border-white/10 p-3 rounded mb-4 text-white focus:border-[#ff003c] outline-none"
+                style={{marginBottom: '1rem'}}
               />
-              <button onClick={saveUser} className="w-full bg-[#ff003c] py-3 rounded font-bold hover:opacity-80">SAVE PROFILE</button>
+              <button onClick={saveUser} className="btn-primary">SAVE PROFILE</button>
             </div>
           )}
 
@@ -145,22 +154,12 @@ export default function Dashboard() {
   );
 }
 
-// --- SUB-COMPONENTS ---
-function NavIcon({ icon, label, active, onClick }) {
-  return (
-    <div onClick={onClick} className={`w-full p-4 flex gap-4 cursor-pointer transition-colors ${active ? 'text-white bg-white/5 border-l-2 border-[#ff003c]' : 'text-gray-500 hover:text-white'}`}>
-      <div>{icon}</div>
-      <span className="whitespace-nowrap font-bold text-sm">{label}</span>
-    </div>
-  );
-}
-
 function StatCard({ label, value, sub, color }) {
   return (
-    <div className="bg-white/5 p-6 rounded-xl border border-white/10 hover:border-[#ff003c] transition">
-      <div className="text-xs font-bold text-gray-500 tracking-wider mb-2">{label}</div>
-      <div className={`text-4xl font-mono font-bold ${color || 'text-white'}`}>{value}</div>
-      <div className="text-xs text-gray-600 mt-2">{sub}</div>
+    <div className="glass" style={{padding: '1.5rem'}}>
+      <div style={{fontSize: '0.75rem', fontWeight: 'bold', color: '#888', letterSpacing: '1px', marginBottom: '0.5rem'}}>{label}</div>
+      <div style={{fontSize: '2.5rem', fontWeight: 'bold', fontFamily: 'monospace', color: color || 'white'}}>{value}</div>
+      <div style={{fontSize: '0.8rem', color: '#666', marginTop: '0.5rem'}}>{sub}</div>
     </div>
   );
 }
