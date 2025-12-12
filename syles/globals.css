@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --brand: #ff003c;
+  --brand-glow: rgba(255, 0, 60, 0.4);
+  --bg: #050505;
+  --surface: #0f0f11;
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #ffffff;
+  --text-dim: #888888;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden; /* App-like feel */
+}
+
+/* Glass Effect */
+.glass {
+  background: rgba(15, 15, 17, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Utilities */
+.text-brand { color: var(--brand); }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.btn-primary {
+  background: var(--brand);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.btn-primary:hover { box-shadow: 0 0 20px var(--brand-glow); transform: scale(1.02); }
+
+input, select {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  color: white;
+  padding: 14px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+input:focus { border-color: var(--brand); }
